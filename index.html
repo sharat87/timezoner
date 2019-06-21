@@ -1,0 +1,29 @@
+<!doctype html>
+<title>Timezoner</title>
+<meta charset="UTF-8">
+
+<link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css?family=Crimson+Text&display=swap" rel="stylesheet">
+
+<h1>~ Timezoner ~</h1>
+
+<h1 id="loadingBox">Loading&hellip;</h1>
+
+<section>
+    <div id="zones"></div>
+
+    <form name="addZoneForm" action="" class="zone">
+        <!-- TODO: Add fuzzy searching to this input. -->
+        <input type="text" list="zoneNames" class="name" placeholder="Add timezone">
+        <datalist id="zoneNames"></datalist>
+    </form>
+</section>
+
+<footer>
+    <p>A project by Shrikant Kandula. Made possible thanks to the <a href="http://momentjs.com/" target="_blank">moment.js</a> project.
+    </p>
+</footer>
+
+<script src="https://unpkg.com/moment@2.24.0/min/moment.min.js"></script>
+<script src="https://unpkg.com/moment-timezone@0.5.25/builds/moment-timezone-with-data-10-year-range.min.js"></script>
+<script src="app.js"></script>
