@@ -25,14 +25,14 @@ button {
   padding: 1em;
   border-width: 0 0 1px;
   border-style: solid;
-  border-color: #BBB;
+  border-color: #EEE;
   display: flex;
   align-items: center;
+  /*justify-content: center;*/
 }
 
 .name {
   min-width: 320px;
-  display: inline-block;
   font-size: 2em;
   display: flex;
   flex-direction: column;
@@ -139,13 +139,9 @@ button {
   border-style: none none solid;
 }
 
-.zone input:hover {
+.zone input:hover,
+.zone input:focus {
   background-color: rgba(0, 0, 0, .1);
-}
-
-.zone input.num:focus {
-  background-color: #09F;
-  color: white;
 }
 
 .zone .sep {
@@ -171,6 +167,11 @@ input.name.error {
   box-shadow: 0 0 12px red;
   border-radius: 3px;
 }
+
+.hide-sliders .slider {
+  display: none;
+}
+
 
 /* Style cleanup for sliders */
 /* Reference: https://css-tricks.com/styling-cross-browser-compatible-range-inputs-css/ */

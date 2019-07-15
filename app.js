@@ -5,7 +5,8 @@
  */
 
 const DEFAULT_ZONES = ['Asia/Kolkata', 'America/New_York', 'Europe/Amsterdam'];
-const zonesEl = document.getElementById('zones');
+const zonesEl = document.getElementById('zones'),
+    settingsFormEl = document.forms.settingsForm;
 
 window.addEventListener('load', () => {
     let currentUtc = roundedTo15(moment.utc());
@@ -17,6 +18,7 @@ window.addEventListener('load', () => {
     zonesEl.addEventListener('keydown', onZoneKeydown);
     zonesEl.addEventListener('wheel', onZoneWheel);
     document.forms.addZoneForm.addEventListener('submit', onAddFormSubmit);
+    settingsFormEl.addEventListener('input', applySettings);
 
     addZone('UTC');
     for (const name of loadZones())
@@ -25,6 +27,7 @@ window.addEventListener('load', () => {
     document.getElementById('loadingBox').remove();
     updateAllZones();
     loadAllTimeZones();
+    applySettings();
 
     function addZone(name) {
         const localClass = moment.tz.guess() === name ? 'local' : '';
@@ -100,9 +103,8 @@ window.addEventListener('load', () => {
 
     function updateZone(zoneEl, exceptInputs) {
         const mt = currentUtc.tz(zoneEl.dataset.zone);
-        setMomentInZoneBox(zoneEl, mt);
+        setMomentInZoneBox(zoneEl, mt, exceptInputs);
 
-        console.log(mt.utcOffset(), mt.format('Z'));
         const rangeInput = zoneEl.querySelector('input[type="range"]');
         if (!exceptInputs || !exceptInputs.includes(rangeInput))
             rangeInput.value = currentOffset + mt.utcOffset();
@@ -191,6 +193,14 @@ window.addEventListener('load', () => {
         }
     }
 
+    function applySettings() {
+        if (settingsFormEl.hideSliders.checked) {
+            document.body.classList.add('hide-sliders');
+        } else {
+            document.body.classList.remove('hide-sliders');
+        }
+    }
+
 });
 
 function roundedTo15(mt) {
@@ -219,18 +229,28 @@ function getMomentInZoneBox(zoneEl) {
     ].join(' '), 'YYYY MM DD hh mm A', zoneEl.dataset.zone);
 }
 
-function setMomentInZoneBox(zoneEl, mt) {
-    let abbr, offset;
-    [
-        zoneEl.year.value,
-        zoneEl.month.value,
-        zoneEl.date.value,
-        zoneEl.hour.value,
-        zoneEl.minute.value,
-        zoneEl.meridian.value,
-        abbr,
-        offset,
-    ] = mt.format('YYYY MM DD hh mm A zz ZZ').split(' ');
+function setMomentInZoneBox(zoneEl, mt, exceptInputs) {
+    const [year, month, date, hour, minute, meridian, abbr, offset] =
+        mt.format('YYYY MM DD hh mm A zz ZZ').split(' ');
+
+    if (!exceptInputs || !exceptInputs.includes(zoneEl.year))
+        zoneEl.year.value = year;
+
+    if (!exceptInputs || !exceptInputs.includes(zoneEl.month))
+        zoneEl.month.value = month;
+
+    if (!exceptInputs || !exceptInputs.includes(zoneEl.date))
+        zoneEl.date.value = date;
+
+    if (!exceptInputs || !exceptInputs.includes(zoneEl.hour))
+        zoneEl.hour.value = hour;
+
+    if (!exceptInputs || !exceptInputs.includes(zoneEl.minute))
+        zoneEl.minute.value = minute;
+
+    if (!exceptInputs || !exceptInputs.includes(zoneEl.meridian))
+        zoneEl.meridian.value = meridian;
+
     zoneEl.querySelector('.tz-abbr').innerHTML = abbr == zoneEl.dataset.zone ? '' : (abbr + ' = UTC' + offset);
 }
 
