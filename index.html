@@ -10,25 +10,25 @@
 <h1 id="loadingBox">Loading&hellip;</h1>
 
 <section>
-    <div id="zones"></div>
+	<div id="zones"></div>
 
-    <form name="addZoneForm" action="" class="zone">
-        <!-- TODO: Add fuzzy searching to this input. -->
-        <input type="text" list="zoneNames" class="name" placeholder="Add timezone">
-        <datalist id="zoneNames"></datalist>
-    </form>
+	<form name="addZoneForm" action="" class="zone">
+		<input type="text" list="zoneNames" class="zone-input name" placeholder="Add timezone" value="">
+		<div></div>
+		<datalist id="zoneNames"></datalist>
+	</form>
 </section>
 
 <form id="settingsForm">
-    <label>
-        <input type="checkbox" name="hideSliders">
-        <span>Hide sliders</span>
-    </label>
+	<label>
+		<input type="checkbox" name="hideSliders">
+		<span>Hide sliders</span>
+	</label>
 </form>
 
 <footer>
-    <p>A project by Shrikant Kandula. Made possible thanks to the <a href="http://momentjs.com/" target="_blank">moment.js</a> project.
-    </p>
+	<p>A project by Shrikant Kandula. Made possible thanks to the <a href="http://momentjs.com/"
+		target="_blank">moment.js</a> project.	</p>
 </footer>
 
 <script src="https://unpkg.com/moment@2.24.0/min/moment.min.js"></script>

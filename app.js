@@ -203,6 +203,28 @@ window.addEventListener('load', () => {
 
 });
 
+window.addEventListener('load-disabled', () => {
+    // Zone input fuzzy filtering.
+    document.body.addEventListener('input', onInput);
+
+    function onInput(event) {
+        if (!event.target.matches('input.zone-input'))
+            return;
+
+        const needle = event.target.value.toLowerCase();
+        const haystack = Array.from(event.target.list.children).map((option) => option.value);
+        console.log(haystack);
+
+        const matches = [];
+        for (const item of haystack) {
+            if (item.toLowerCase().includes(needle))
+                matches.push(item);
+        }
+
+        event.target.nextElementSibling.innerHTML = matches.map((item) => `<a href=#>${item}</a>`).join('');
+    }
+});
+
 function roundedTo15(mt) {
     if (mt instanceof moment) {
         const mod = mt.second(0).minute() % 15;
