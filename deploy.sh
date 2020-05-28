@@ -17,7 +17,7 @@ rmdir dist
 git add .
 git commit -m "Auto-build"
 git remote set-url origin git@github.com:sharat87/timezoner.git
-git push --force origin gh-pages
+git push --set-upstream --force origin gh-pages
 
 popd
 
