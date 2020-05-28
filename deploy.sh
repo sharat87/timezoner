@@ -7,10 +7,15 @@ tmp_dir=_deploy_temp
 git clone --branch master . "$tmp_dir"
 pushd "$tmp_dir"
 
+git config user.name "$(git --git-dir "../.git" config user.name)"
+git config user.email "$(git --git-dir "../.git" config user.email)"
 git checkout -B gh-pages
 
 npm run build
-find . -depth 1 ! -name dist -exec rm -rf '{}' +
+ls -A | grep -v '^\(dist\|\.git\)$' | while read name; do
+	rm -rf "$name"
+done
+
 find dist -depth 1 -exec mv '{}' . ';'
 rmdir dist
 
