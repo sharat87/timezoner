@@ -1,2 +1,5 @@
 /.idea
 *.iml
+/.cache
+/dist
+/node_modules
