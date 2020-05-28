@@ -1,5 +1,5 @@
 body {
-	font: 18px 'Crimson Text', sans-serif;
+	font: 18px Lato, sans-serif;
 }
 
 h1 {
@@ -12,12 +12,16 @@ h1 {
 	display: none;
 }
 
-input {
-	font-size: inherit;
+input, input::placeholder, button {
+	font: inherit;
+	color: inherit;
+}
+
+input::placeholder {
+	opacity: .6;
 }
 
 button {
-	font: inherit;
 	cursor: pointer;
 }
 
@@ -34,6 +38,7 @@ button {
 .name {
 	min-width: 320px;
 	font-size: 2em;
+	margin-right: 1em;
 	display: flex;
 	flex-direction: column;
 }
@@ -121,19 +126,22 @@ button {
 }
 
 .zone input.num {
-	width: calc(2ex + 3px);
+	width: 2ch;
 	padding: 0;
 	text-align: center;
 }
 
 .zone input.num[name="year"] {
-	width: calc(4ex + 6px);
+	width: 4ch;
+}
+
+.zone input.num[name="meridian"] {
+	width: 3ch;
 }
 
 .zone input.num,
 .zone input.num + .sep {
 	font-size: 1.5em;
-	font-family: monospace;
 	border-width: 0 0 1px;
 	border-color: #999;
 	border-style: none none solid;
