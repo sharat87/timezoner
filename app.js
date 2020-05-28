@@ -60,12 +60,6 @@ window.addEventListener('load', () => {
 				<input class="num" required name="minute">
 				<span class="sep">&nbsp;</span>
 				<input class="num" required name="meridian">
-				<!-- <span>&#x1F324;</span> -->
-				<!-- <span>&#x1F319;</span> -->
-				<div class=slider>
-					<!-- <div class=bg></div> -->
-					<input type="range" min="-2100" max="2100" step=15>
-				</div>
 			</form>
 		`.trim());
 		updateZone(zonesEl.lastElementChild);
@@ -106,7 +100,7 @@ window.addEventListener('load', () => {
 		setMomentInZoneBox(zoneEl, mt, exceptInputs);
 
 		const rangeInput = zoneEl.querySelector('input[type="range"]');
-		if (!exceptInputs || !exceptInputs.includes(rangeInput))
+		if (rangeInput && (!exceptInputs || !exceptInputs.includes(rangeInput)))
 			rangeInput.value = currentOffset + mt.utcOffset();
 	}
 
@@ -194,7 +188,7 @@ window.addEventListener('load', () => {
 	}
 
 	function applySettings() {
-		if (settingsFormEl.hideSliders.checked) {
+		if (settingsFormEl.hideSliders && settingsFormEl.hideSliders.checked) {
 			document.body.classList.add('hide-sliders');
 		} else {
 			document.body.classList.remove('hide-sliders');
