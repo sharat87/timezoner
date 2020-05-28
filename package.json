@@ -6,8 +6,6 @@
 	"private": true,
 	"license": "MIT",
 	"scripts": {
-		"start": "parcel index.html",
-		"build": "parcel build --no-source-maps --no-autoinstall index.html",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"repository": {
