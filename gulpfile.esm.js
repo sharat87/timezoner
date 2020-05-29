@@ -43,7 +43,7 @@ export function html() {
 }
 
 export function assets() {
-	return gulp.src("src/*.txt")
+	return gulp.src(["src/*.txt", "CNAME"])
 		.pipe(gulp.dest("dist"));
 }
 
