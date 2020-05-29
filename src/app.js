@@ -198,33 +198,48 @@ window.addEventListener('load', () => {
 });
 
 window.addEventListener('load', () => {
-	if (localStorage.labs != 1) return;
-
 	// Fuzzy searching of cities.
-	document.body.addEventListener('input', onInput);
+	document.body.addEventListener("input", onInput);
+
+	const cityData = [];
+	let prevNeedle = "";
+	let prevResults = [];
 
 	fetch('cities5000.txt')
-		.then((response) => response.body)
+		.then((response) => response.text())
 		.then((content) => {
-			console.log(content);
-			const lines = content.split('\n');
+			const lines = content.split('\n').slice(2);
+			for (const line of lines) {
+				if (!line) {
+					continue;
+				}
+				const [name, asciiName, timezone] = line.split("\t");
+				cityData.push({name, asciiName, timezone, lowerName: asciiName.toLowerCase()});
+			}
 		});
 
 	function onInput(event) {
-		if (!event.target.matches('input.zone-input'))
+		if (!event.target.matches("input.zone-input")) {
 			return;
-
-		const needle = event.target.value.toLowerCase();
-		const haystack = Array.from(event.target.list.children).map((option) => option.value);
-		console.log(haystack);
-
-		const matches = [];
-		for (const item of haystack) {
-			if (item.toLowerCase().includes(needle))
-				matches.push(item);
 		}
 
-		event.target.nextElementSibling.innerHTML = matches.map((item) => `<a href=#>${item}</a>`).join('');
+		const needle = event.target.value.toLowerCase();
+
+		if (needle === prevNeedle) {
+			return;
+		}
+
+		const matches = [];
+		const results = [];
+		for (const item of (prevNeedle && needle.includes(prevNeedle) ? prevResults : cityData)) {
+			if (item.lowerName.includes(needle)) {
+				results.push(item);
+				matches.push(`<a href=# data-timezone="${item.timezone}">${item.name}</a>`);
+			}
+		}
+
+		prevResults = results;
+		event.target.nextElementSibling.innerHTML = matches.join("");
 	}
 });
 
