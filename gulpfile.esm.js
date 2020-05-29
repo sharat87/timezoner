@@ -29,6 +29,8 @@ export function html() {
 	return gulp.src("src/*.html")
 		.pipe(ejs({
 			js: [
+				"https://cdn.jsdelivr.net/npm/moment@2.26.0/moment.min.js",
+				"https://cdn.jsdelivr.net/npm/moment-timezone@0.5.31/builds/moment-timezone-with-data.min.js",
 				"all.js",
 			],
 			css: [
