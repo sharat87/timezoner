@@ -1,31 +1,28 @@
-const gulp = require('gulp');
-const less = require('gulp-less');
-const cleanCss = require('gulp-clean-css');
-const uglify = require('gulp-uglify-es').default;
-const ejs = require('gulp-ejs');
-const htmlmin = require("gulp-htmlmin");
-const concat = require('gulp-concat');
-const sourcemaps = require('gulp-sourcemaps');
-const del = require('del');
-const browserSync = require('browser-sync').create();
+const gulp = require("gulp");
+const less = require("gulp-less");
+const cleanCss = require("gulp-clean-css");
+const uglify = require("gulp-uglify-es").default;
+const ejs = require("gulp-ejs");
+const htmlMin = require("gulp-htmlmin");
+const concat = require("gulp-concat");
+const del = require("del");
+const browserSync = require("browser-sync").create();
+
+let isDev = false;
 
 export function css() {
-	return gulp.src("src/*.less")
-		.pipe(sourcemaps.init())
+	return gulp.src("src/*.less", {sourcemaps: isDev})
 		.pipe(less())
 		.pipe(concat("all.css"))
-		.pipe(sourcemaps.write())
 		.pipe(cleanCss())
-		.pipe(gulp.dest("dist"));
+		.pipe(gulp.dest("dist", {sourcemaps: isDev}));
 }
 
 export function js() {
-	return gulp.src("src/*.js")
-		.pipe(sourcemaps.init())
+	return gulp.src("src/*.js", {sourcemaps: isDev})
 		.pipe(concat("all.js"))
 		.pipe(uglify())
-		.pipe(sourcemaps.write())
-		.pipe(gulp.dest("dist"));
+		.pipe(gulp.dest("dist", {sourcemaps: isDev}));
 }
 
 export function html() {
@@ -39,7 +36,7 @@ export function html() {
 				"https://fonts.googleapis.com/css?family=Lato&display=swap",
 			],
 		}))
-		.pipe(htmlmin({
+		.pipe(htmlMin({
 			collapseWhitespace: true,
 		}))
 		.pipe(gulp.dest("dist"));
@@ -74,6 +71,10 @@ export function serve() {
 
 export const build = gulp.series(clean, gulp.parallel(css, js, html, assets));
 
-export const start = gulp.series(build, gulp.parallel(watch, serve));
+// export const start = gulp.series(build, gulp.parallel(watch, serve));
+export function start() {
+	isDev = true;
+	return gulp.series(build, gulp.parallel(watch, serve))();
+}
 
-export default serve;
+export default start;
