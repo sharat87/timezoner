@@ -181,15 +181,28 @@ input.name.error {
 
 .zone-input + div {
 	position: absolute;
+	top: 100%;
+	left: 0;
 	background-color: whitesmoke;
-	top: 4em;
 	z-index: 10;
 	box-shadow: 0 3px 6px rgba(0, 0, 0, .4);
-	border-radius: 3px;
-}
 
-.zone-input + div a {
-	text-decoration: none;
+	a {
+		text-decoration: none;
+		display: block;
+		width: 300px;
+		padding: 6px;
+		overflow-x: hidden;
+
+		&:hover {
+			background-color: aliceblue;
+		}
+
+		&.active {
+			background-color: #0099FF;
+			color: white;
+		}
+	}
 }
 
 #settingsForm {
@@ -203,6 +216,10 @@ footer {
 
 footer p {
 	margin: 0;
+}
+
+[name="addZoneForm"] {
+	position: relative;
 }
 
 

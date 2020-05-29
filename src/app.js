@@ -197,15 +197,22 @@ window.addEventListener('load', () => {
 		}
 	}
 
-});
+// });
 
-window.addEventListener('load', () => {
+// window.addEventListener('load', () => {
 	// Fuzzy searching of cities.
-	document.body.addEventListener("input", onInput);
+	document.body.addEventListener("keydown", onKeyDown);
+	document.body.addEventListener("click", (event) => {
+		if (event.target.getAttribute("href") === "#" && event.target.dataset.timezone) {
+			event.preventDefault();
+			addTimeZeneFromLink(event.target);
+		}
+	});
 
 	const cityData = [];
 	let prevNeedle = "";
 	let prevResults = [];
+	let searchId = 0;
 
 	fetch('cities5000.txt')
 		.then((response) => response.text())
@@ -220,28 +227,69 @@ window.addEventListener('load', () => {
 			}
 		});
 
-	function onInput(event) {
+	function onKeyDown(event) {
 		if (!event.target.matches("input.zone-input")) {
 			return;
 		}
 
-		const needle = event.target.value.toLowerCase();
+		if (event.key === "ArrowUp") {
+			const activeEl = event.target.previousElementSibling.querySelector(".active");
+			if (activeEl.previousElementSibling) {
+				activeEl.classList.remove("active");
+				activeEl.previousElementSibling.classList.add("active");
+			}
 
-		if (needle === prevNeedle) {
-			return;
+		} else if (event.key === "ArrowDown") {
+			const activeEl = event.target.nextElementSibling.querySelector(".active");
+			if (activeEl.nextElementSibling) {
+				activeEl.classList.remove("active");
+				activeEl.nextElementSibling.classList.add("active");
+			}
+
+		} else if (event.key === "Enter") {
+			const activeEl = event.target.nextElementSibling.querySelector(".active");
+			addTimeZeneFromLink(activeEl);
+
+		} else {
+			setTimeout(doSearch);
+
 		}
 
-		const matches = [];
-		const results = [];
-		for (const item of (prevNeedle && needle.includes(prevNeedle) ? prevResults : cityData)) {
-			if (item.lowerName.includes(needle)) {
-				results.push(item);
-				matches.push(`<a href=# data-timezone="${item.timezone}">${item.name}</a>`);
+		function doSearch() {
+			const thisSearchId = ++searchId;
+
+			const needle = event.target.value.toLowerCase();
+
+			if (needle === prevNeedle) {
+				return;
+			}
+
+			const matches = [];
+			setTimeout(doSearch);
+
+			const results = [];
+			for (const item of (prevNeedle && needle.includes(prevNeedle) ? prevResults : cityData)) {
+				if (item.lowerName.includes(needle)) {
+					results.push(item);
+					matches.push(`<a href=# data-timezone="${item.timezone}" class="${matches.length ? "" : "active"}">${item.name}</a>`);
+				}
+				if (thisSearchId !== searchId) {
+					console.log("Cancel search", thisSearchId);
+					return;
+				}
+			}
+
+			if (thisSearchId === searchId) {
+				prevResults = results;
+				event.target.nextElementSibling.innerHTML = matches.join("");
 			}
 		}
 
-		prevResults = results;
-		event.target.nextElementSibling.innerHTML = matches.join("");
+	}
+
+	function addTimeZeneFromLink(el) {
+		addZone(el.dataset.timezone);
+		saveZones();
 	}
 });
 
