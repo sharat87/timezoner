@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/sharat87/timezoner#readme",
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^12.0.0",
+    "@rollup/plugin-json": "^4.0.3",
+    "@rollup/plugin-node-resolve": "^8.0.0",
     "browser-sync": "^2.26.7",
     "del": "^5.1.0",
     "esm": "^3.2.25",
@@ -26,7 +29,12 @@
     "gulp-ejs": "^5.1.0",
     "gulp-htmlmin": "^5.0.1",
     "gulp-less": "^4.0.1",
-    "gulp-livereload": "^4.0.2",
-    "gulp-uglify-es": "^2.0.0"
+    "gulp-uglify-es": "^2.0.0",
+    "moment": "^2.26.0",
+    "moment-timezone": "^0.5.31",
+    "rollup": "^2.11.2",
+    "rollup-plugin-terser": "^6.1.0",
+    "rollup-stream": "^1.24.1",
+    "vinyl-source-stream": "^2.0.0"
   }
 }

@@ -4,6 +4,8 @@
  *	Fuzzy searching of timezones when adding.
  */
 
+// import moment from "moment-timezone";  // For use with RollUp bundler.
+
 const DEFAULT_ZONES = ['Asia/Kolkata', 'America/New_York', 'Europe/Amsterdam'];
 const zonesEl = document.getElementById('zones'),
 	settingsFormEl = document.forms.settingsForm;

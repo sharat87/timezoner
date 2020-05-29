@@ -7,6 +7,13 @@ const htmlMin = require("gulp-htmlmin");
 const concat = require("gulp-concat");
 const del = require("del");
 const browserSync = require("browser-sync").create();
+const rollup = require('rollup');
+import rollupNodeResolve from '@rollup/plugin-node-resolve';
+import rollUpCjsResolve from '@rollup/plugin-commonjs';
+import rollupJson from '@rollup/plugin-json';
+import { terser as rollupTerser } from "rollup-plugin-terser";
+
+const source = require('vinyl-source-stream');
 
 let isDev = false;
 
@@ -23,6 +30,30 @@ export function js() {
 		.pipe(concat("all.js"))
 		.pipe(uglify())
 		.pipe(gulp.dest("dist", {sourcemaps: isDev}));
+}
+
+export function roll() {
+	return rollup
+		.rollup({
+			input: './src/app.js',
+			plugins: [
+				// rollupTypescript(),
+				rollupNodeResolve(),
+				rollUpCjsResolve(),
+				rollupJson(),
+			]
+		})
+		.then(bundle => {
+			return bundle.write({
+				file: './dist/all.js',
+				format: 'iife',
+				name: 'all',
+				sourcemap: isDev,
+				plugins: [
+					rollupTerser(),
+				],
+			});
+		});
 }
 
 export function html() {
