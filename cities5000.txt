@@ -46325,7 +46325,7 @@ New Rochelle	New Rochelle	America/New_York
 New Springville	New Springville	America/New_York
 New Square	New Square	America/New_York
 New Windsor	New Windsor	America/New_York
-New York	New York	America/New_York
+New York City	New York City	America/New_York
 Newark	Newark	America/New_York
 Newburgh	Newburgh	America/New_York
 Niagara Falls	Niagara Falls	America/New_York
