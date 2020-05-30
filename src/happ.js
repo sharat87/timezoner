@@ -123,21 +123,45 @@ function zoneDisplayForCity(state) {
 			" - ",
 			zone.country,
 			" - ",
-			h("input", {class: "num", required: true, name: "year", value: year}),
+			h("input", {class: "num", required: true, name: "year", value: year, onkeydown}),
 			"-",
-			h("input", {class: "num", required: true, name: "month", value: month}),
+			h("input", {class: "num", required: true, name: "month", value: month, onkeydown}),
 			"-",
-			h("input", {class: "num", required: true, name: "date", value: date}),
+			h("input", {class: "num", required: true, name: "date", value: date, onkeydown}),
 			"  ",
-			h("input", {class: "num", required: true, name: "hour", value: hour}),
+			h("input", {class: "num", required: true, name: "hour", value: hour, onkeydown}),
 			":",
-			h("input", {class: "num", required: true, name: "minute", value: minute}),
+			h("input", {class: "num", required: true, name: "minute", value: minute, onkeydown}),
 			" ",
-			h("input", {class: "num", required: true, name: "meridian", value: meridian}),
+			h("input", {class: "num", required: true, name: "meridian", value: meridian, onkeydown}),
 			" ",
 			abbr + ' = UTC' + offset,
 		]);
 	});
+
+	function onkeydown(state, event) {
+		if (!/^Arrow(Up|Down)$/.exec(event.key)) {
+			return;
+		}
+
+		event.preventDefault();
+
+		const direction = event.key === "ArrowUp" ? 1 : -1;
+		let count = 1;
+		let unit = event.target.name;
+
+		if (unit === 'meridian')
+			[count, unit] = [12, 'h'];
+		else if (unit === 'minute')
+			count = 15;
+		else if (unit === 'date')
+			unit = 'd';
+
+		return {
+			...state,
+			currentUtc: state.currentUtc.add(direction * count, unit),
+		};
+	}
 }
 
 function roundedTo15(mt) {
