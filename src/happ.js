@@ -11,7 +11,7 @@ function main() {
 
 		init: [
 			{
-				currentUtc: null,
+				currentUtc: roundedTo15(moment.utc()),
 
 				cities: [
 					"Mumbai",
@@ -67,17 +67,39 @@ function main() {
 }
 
 function loadCities(dispatch/*, options*/) {
-	fetch('cities5000.txt')
+	fetch('cities.txt')
 		.then((response) => response.text())
 		.then((content) => {
 			const zonesByCity = new Map;
-			const lines = content.split('\n').slice(2);
+			const countries = new Map;
+			const lines = content.split('\n');
+			let readingCountries = true;
+
 			for (const line of lines) {
-				if (line) {
-					const [name, asciiName, timezone] = line.split("\t");
-					zonesByCity.set(name, {name, asciiName, timezone, lowerName: asciiName.toLowerCase()});
+				if (!line) {
+					if (readingCountries) {
+						readingCountries = false;
+					} else {
+						break;
+					}
+				} else {
+					if (readingCountries) {
+						const [code, name] = line.split("\t");
+						countries.set(code, name);
+					} else {
+						const [name, asciiName, countryCode, timezone] = line.split("\t");
+						zonesByCity.set(name, {
+							name,
+							asciiName: asciiName || name,
+							country: countries.get(countryCode) || countryCode,
+							timezone,
+							lowerName: asciiName.toLowerCase(),
+						});
+					}
 				}
 			}
+
+			console.log(zonesByCity);
 			dispatch((state) => {
 				return {...state, zonesByCity};
 			});
@@ -91,24 +113,44 @@ function zoneDisplayForCity(state) {
 			return "";
 		}
 
-		const time = state.timesByZone.get(zone.timezones);
+		const [year, month, date, hour, minute, meridian, abbr, offset] =
+			state.currentUtc.tz(zone.timezone).format('YYYY MM DD hh mm A zz ZZ').split(' ');
 
 		return h("form", {class: "zone", "data-zone": zone.timezone}, [
 			h("div", {class: "name"}, name),
 			" - ",
-			zone ? zone.timezone : "No zone",
+			zone.timezone,
 			" - ",
-			h("input", {class: "num", required: true, name: "year", value: time.year}),
+			zone.country,
+			" - ",
+			h("input", {class: "num", required: true, name: "year", value: year}),
 			"-",
-			h("input", {class: "num", required: true, name: "month", value: time.month}),
+			h("input", {class: "num", required: true, name: "month", value: month}),
 			"-",
-			h("input", {class: "num", required: true, name: "date", value: time.date}),
+			h("input", {class: "num", required: true, name: "date", value: date}),
 			"  ",
-			h("input", {class: "num", required: true, name: "hour", value: time.hour}),
+			h("input", {class: "num", required: true, name: "hour", value: hour}),
 			":",
-			h("input", {class: "num", required: true, name: "minute", value: time.minute}),
+			h("input", {class: "num", required: true, name: "minute", value: minute}),
 			" ",
-			h("input", {class: "num", required: true, name: "meridian", value: time.meridian}),
+			h("input", {class: "num", required: true, name: "meridian", value: meridian}),
+			" ",
+			abbr + ' = UTC' + offset,
 		]);
 	});
+}
+
+function roundedTo15(mt) {
+	if (mt instanceof moment) {
+		const mod = mt.second(0).minute() % 15;
+		if (mod >= 8)
+			mt.add(15, 'm');
+		return mt.subtract(mod, 'm');
+	} else {
+		mt = Math.round(parseFloat(mt));
+		const mod = mt % 15;
+		if (mod >= 8)
+			mt += 15;
+		return mt - mod;
+	}
 }
