@@ -8,6 +8,8 @@
 <% } %>
 
 <body>
+<div id="app"></div>
+
 <h1>~ Timezoner ~</h1>
 
 <h1 id=loadingBox>Loading&hellip;</h1>
@@ -30,6 +32,7 @@
 		target=mjs>moment.js</a> project.</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/hyperapp@2.0.4/dist/hyperapp.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment@2.26.0/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment-timezone@0.5.31/builds/moment-timezone-with-data.min.js"></script>
 <% for (f of js) { %>
