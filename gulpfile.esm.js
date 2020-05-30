@@ -12,6 +12,7 @@ import rollupNodeResolve from '@rollup/plugin-node-resolve';
 import rollUpCjsResolve from '@rollup/plugin-commonjs';
 import rollupJson from '@rollup/plugin-json';
 import { terser as rollupTerser } from "rollup-plugin-terser";
+import ghpages from "gh-pages";
 
 const source = require('vinyl-source-stream');
 
@@ -100,12 +101,18 @@ export function serve() {
 	});
 }
 
-export const build = gulp.series(clean, gulp.parallel(css, js, html, assets));
+export function justDeploy(cb) {
+	ghpages.publish("dist", cb);
+}
+
+export const build = gulp.parallel(css, js, html, assets);
+
+export const deploy = gulp.series(clean, build, justDeploy);
 
 // export const start = gulp.series(build, gulp.parallel(watch, serve));
 export function start() {
 	isDev = true;
-	return gulp.series(build, gulp.parallel(watch, serve))();
+	return gulp.series(clean, build, gulp.parallel(watch, serve))();
 }
 
 export default start;
