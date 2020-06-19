@@ -98,6 +98,10 @@ export function serve() {
 	browserSync.init({
 		server: "dist",
 		open: false,
+		port: 3020,
+		ui: {
+			port: 3021,
+		},
 	});
 }
 
