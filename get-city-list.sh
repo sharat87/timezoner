@@ -6,7 +6,8 @@
 
 curl --silent 'https://download.geonames.org/export/dump/countryInfo.txt' \
 	| grep --invert-match '^#' \
-	| cut -d $'\t' -f 1,5
+	| cut -d $'\t' -f 1,5 \
+	| sed $'s/\t//'
 
 echo
 
@@ -31,9 +32,30 @@ echo
 # 18 timezone          : the iana timezone id (see file timeZone.txt) varchar(40)
 # 19 modification date : date of last modification in yyyy-MM-dd format
 
-curl --silent 'https://download.geonames.org/export/dump/cities15000.zip' \
-	| funzip \
-	| cut -d $'\t' -f 2,9,15,18 \
-	| sort --numeric-sort --reverse --field-separator=$'\t' --key=3 --unique
+city_csv="$(
+	curl --silent 'https://download.geonames.org/export/dump/cities15000.zip' \
+		| funzip \
+		| cut -d $'\t' -f 2,9,15,18 \
+		| sort --numeric-sort --reverse --field-separator=$'\t' --key=3 --unique \
+		| cut -d $'\t' -f 1,2,4
+)"
+
+zone_map="$(
+	echo "$city_csv" | cut -d $'\t' -f3 | sort -u | awk -F $'\t' '{ print NR FS $1 }'
+)"
+
+#echo "$zone_map"
+#echo
+
+#echo "$city_csv" | while read line; do
+#	prefix="$(echo "$line" | cut -d $'\t' -f 1,2)"
+#	timezone="$(echo "$line" | cut -d $'\t' -f 3)"
+#	number="$(echo "$zone_map" | grep -F "$timezone" | cut -d $'\t' -f 1)"
+#	echo -n "$prefix"
+#	echo -n $'\t'
+#	echo "$number"
+#done
+
+echo "$city_csv"
 
 } > "src/cities.txt"

@@ -7,6 +7,13 @@
 
 const devMode = localStorage.devMode === "1";
 
+const bootStepDone = (() => {
+	let count = 2;
+	return () => --count <= 0 && start();
+})();
+
+window.addEventListener("load", bootStepDone);
+
 const CityStore = (() => {
 
 	const cityZonesMap = new Map();
@@ -20,16 +27,16 @@ const CityStore = (() => {
 			const countries = new Map;
 			for (const line of countriesCSV.split("\n")) {
 				if (line.length) {
-					countries.set(...line.split("\t"));
+					countries.set(line.substr(0, 2), line.substr(2));
 				}
 			}
 
 			cityZonesMap.clear();
 			for (const line of citiesCSV.split("\n")) {
 				if (line.length) {
-					const [name, countryCode, population, timezone] = line.split("\t");
+					const [name, countryCode, timezone] = line.split("\t");
 					const country = countries.get(countryCode);
-					const item = {name, country, population, timezone, key: countryCode + name};
+					const item = {name, country, timezone, key: countryCode + name};
 					cityZonesMap.set(item.key, item);
 				}
 			}
@@ -43,8 +50,7 @@ const CityStore = (() => {
 			});
 
 			migrateZoneStorage();
-
-			m.redraw();
+			bootStepDone();
 		});
 
 	return {
@@ -84,7 +90,9 @@ const model = {
 	},
 };
 
-window.addEventListener("load", () => m.mount(document.getElementById("app"), Main));
+function start() {
+	m.mount(document.getElementById("app"), Main);
+}
 
 function Main() {
 	// TODO: Move global model here.
@@ -112,8 +120,6 @@ function Main() {
 		}
 
 		return [
-			m("h1", "~ Timezoner ~"),
-
 			m("table.cities", [
 				m("tbody", zoneEls),
 				m("tbody", [
