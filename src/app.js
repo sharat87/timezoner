@@ -307,7 +307,7 @@ function addCityForm() {
 									class: index === searchSelectedIndex ? "active" : "",
 									onclick: addSelectedZone,
 								},
-								[item.name, ", ", item.country]
+								`${item.name}, ${item.country}`
 							);
 						}),
 			),
