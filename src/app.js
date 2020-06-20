@@ -6,16 +6,11 @@
 // import moment from "moment-timezone";  // For use with RollUp bundler.
 
 const devMode = localStorage.devMode === "1";
-
-const bootStepDone = (() => {
-	let count = 2;
-	return () => --count <= 0 && start();
-})();
-
-window.addEventListener("load", bootStepDone);
+window.addEventListener("load", start);
 
 const CityStore = (() => {
 
+	let isReady = false;
 	const cityZonesMap = new Map();
 	let searchId = 0;
 
@@ -42,10 +37,14 @@ const CityStore = (() => {
 			}
 
 			migrateZoneStorage();
-			bootStepDone();
+			isReady = true;
 		});
 
 	return {
+		get isReady() {
+			return isReady;
+		},
+
 		get data() {
 			return cityZonesMap;
 		},
@@ -289,22 +288,29 @@ function addCityForm() {
 	function view() {
 		return m("form.zone", { style: { position: "relative" } }, [
 			m("input.zone-input.name", {
-				placeholder: "Add city",
+				placeholder: CityStore.isReady ? "Add city" : "Loading cities...",
 				value: searchQuery,
 				onkeydown,
 				oninput,
 			}),
-			m("div.search-results-box", searchResults.map(({ item }, index) => {
-				return m(
-					"a",
-					{
-						href: "#",
-						class: index === searchSelectedIndex ? "active" : "",
-						onclick: addSelectedZone,
-					},
-					[item.name, ", ", item.country]
-				);
-			})),
+			searchQuery && m(
+				"div.search-results-box",
+				!CityStore.isReady
+					? m.trust("Loading cities for search, please wait&hellip;")
+					: searchResults.length === 0
+						? "No matches found."
+						: searchResults.map(({ item }, index) => {
+							return m(
+								"a",
+								{
+									href: "#",
+									class: index === searchSelectedIndex ? "active" : "",
+									onclick: addSelectedZone,
+								},
+								[item.name, ", ", item.country]
+							);
+						}),
+			),
 		]);
 	}
 
