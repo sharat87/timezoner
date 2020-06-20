@@ -17,6 +17,7 @@ window.addEventListener("load", bootStepDone);
 const CityStore = (() => {
 
 	const cityZonesMap = new Map();
+	let searchId = 0;
 
 	fetch("cities.txt")
 		.then((response) => response.text())
@@ -58,25 +59,32 @@ const CityStore = (() => {
 		},
 
 		search(needle, limit) {
-			needle = needle.trim().toLowerCase();
+			const thisSearchId = ++searchId;
 
-			if (needle.length === 0) {
-				return [];
-			}
+			return new Promise((resolve, reject) => {
+				needle = needle.trim().toLowerCase();
 
-			const prefixMatches = [];
-			const anywhereMatches = [];
+				if (needle.length === 0) {
+					resolve([]);
+				}
 
-			for (const item of cityZonesMap.values()) {
-				if (item.searchRep.includes(needle)) {
-					(item.searchRep.startsWith(needle) ? prefixMatches : anywhereMatches).push({ item });
-					if (prefixMatches.length >= limit) {
-						break;
+				const prefixMatches = [];
+				const anywhereMatches = [];
+
+				for (const item of cityZonesMap.values()) {
+					if (item.searchRep.includes(needle)) {
+						(item.searchRep.startsWith(needle) ? prefixMatches : anywhereMatches).push({ item });
+						if (prefixMatches.length >= limit) {
+							break;
+						}
+					}
+					if (thisSearchId !== searchId) {
+						reject();
 					}
 				}
-			}
 
-			return prefixMatches.concat(...anywhereMatches).slice(0, limit);
+				resolve(prefixMatches.concat(...anywhereMatches).slice(0, limit));
+			});
 		},
 	};
 
@@ -274,7 +282,6 @@ function addCityForm() {
 	let searchQuery = "";
 	const searchResults = [];
 	let prevNeedle = "";
-	let searchId = 0;
 	let searchSelectedIndex = 0;
 
 	return { view };
@@ -315,6 +322,7 @@ function addCityForm() {
 
 	function oninput(event) {
 		searchQuery = event.target.value;
+		setTimeout(doSearch);
 	}
 
 	function onkeydown(event) {
@@ -340,26 +348,23 @@ function addCityForm() {
 				searchQuery = "";
 			}
 
-		} else {
-			setTimeout(doSearch);
+		}
+	}
 
+	function doSearch() {
+		const needle = searchQuery.toLowerCase();
+		if (prevNeedle === needle) {
+			return;
 		}
 
-		function doSearch() {
-			const needle = event.target.value.toLowerCase();
-			if (prevNeedle === needle) {
-				return;
-			}
-
-			const thisSearchId = ++searchId;
-			const results = CityStore.search(needle, 10);
-			if (thisSearchId === searchId) {
+		CityStore.search(needle, 10)
+			.then(results => {
 				searchResults.splice(0, searchResults.length, ...results);
 				searchSelectedIndex = 0;
 				prevNeedle = needle;
 				m.redraw();
-			}
-		}
+			})
+			.catch(() => console.info("Search rejected for " + needle));
 	}
 }
 
